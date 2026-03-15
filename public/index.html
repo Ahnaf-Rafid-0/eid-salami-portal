@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahnaf's Eid Salami Payment Portal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>Ahnaf's Eid Salami Portal</h1>
+      <p class="subtitle">Safe and Secure Salami Methods</p>
+    </div>
+
+    <!-- Salami Info Section -->
+    <div class="salami-info">
+      
+      <p class="festive-text">
+        মুক্তহস্তে সালামি দিয়ে আপনার মনুষ্যত্বের পরিচয় দিন , সালামি দিলে দোয়া ফ্রি ।
+        ঈদ মোবারক! 
+      </p>
+      <div class="benefits">
+        <span class="benefit">✓ Secure</span>
+        <span class="benefit">✓ Fast</span>
+        <span class="benefit">✓ Reliable</span>
+      </div>
+    </div>
+
+    <!-- Payment Methods Section -->
+    <div class="payment-section">
+      <h2>Select Salami Method</h2>
+      
+      <div class="payment-grid">
+        <!-- Bkash -->
+        <div class="payment-card">
+          <button class="payment-btn" data-method="bkash">
+            <img src="images/bkash.png" alt="Bkash" class="payment-logo">
+            <span>Bkash</span>
+          </button>
+          <div class="payment-details" id="bkash-details" style="display: none;">
+            <div class="payment-info">
+              <p class="label">Payment Number</p>
+              <div class="number-container">
+                <span class="number" id="bkash-number">Loading...</span>
+                <button class="copy-btn" onclick="copyToClipboard('bkash-number')">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nagad -->
+        <div class="payment-card">
+          <button class="payment-btn" data-method="nagad">
+            <img src="images/nagad.png" alt="Nagad" class="payment-logo">
+            <span>Nagad</span>
+          </button>
+          <div class="payment-details" id="nagad-details" style="display: none;">
+            <div class="payment-info">
+              <p class="label">Payment Number</p>
+              <div class="number-container">
+                <span class="number" id="nagad-number">Loading...</span>
+                <button class="copy-btn" onclick="copyToClipboard('nagad-number')">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+               <!-- Bank -->
+        <div class="payment-card">
+          <button class="payment-btn" data-method="bank">
+            <span class="icon">🏦</span>
+            <span>Bank Account</span>
+          </button>
+          <div class="payment-details" id="bank-details" style="display: none;">
+            <div class="payment-info">
+              <p class="label">Account Holder Name</p>
+              <div class="number-container">
+                <span class="number" id="bank-holder">Loading...</span>
+                <button class="copy-btn" onclick="copyToClipboard('bank-holder')">Copy</button>
+              </div>
+            </div>
+            <div class="payment-info" style="margin-top: 12px;">
+              <p class="label">Account Number (IFIC BANK)</p>
+              <div class="number-container">
+                <span class="number" id="bank-number">Loading...</span>
+                <button class="copy-btn" onclick="copyToClipboard('bank-number')">Copy</button>
+              </div>
+            </div>
+            <div class="payment-info" style="margin-top: 12px;">
+              <p class="label">Bank Address</p>
+              <div class="number-container">
+                <span class="number" id="bank-address" style="font-size: 1em;">Loading...</span>
+                <button class="copy-btn" onclick="copyToClipboard('bank-address')">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cellfin -->
+        <div class="payment-card">
+          <button class="payment-btn" data-method="cellfin">
+            <img src="images/cellfin.png" alt="Cellfin" class="payment-logo">
+            <span>Cellfin</span>
+          </button>
+          <div class="payment-details" id="cellfin-details" style="display: none;">
+            <div class="payment-info">
+              <p class="label">Payment Number</p>
+              <div class="number-container">
+                <span class="number" id="cellfin-number">Loading...</span>
+                <button class="copy-btn" onclick="copyToClipboard('cellfin-number')">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rocket -->
+        <div class="payment-card">
+          <button class="payment-btn" data-method="rocket">
+            <img src="images/rocket.png" alt="Rocket" class="payment-logo">
+            <span>Rocket</span>
+          </button>
+          <div class="payment-details" id="rocket-details" style="display: none;">
+            <div class="payment-info">
+              <p class="label">Payment Number</p>
+              <div class="number-container">
+                <span class="number" id="rocket-number">Loading...</span>
+                <button class="copy-btn" onclick="copyToClipboard('rocket-number')">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- mKash -->
+        <div class="payment-card">
+          <button class="payment-btn" data-method="mkash">
+            <img src="images/mkash.png" alt="mKash" class="payment-logo">
+            <span>mKash</span>
+          </button>
+          <div class="payment-details" id="mkash-details" style="display: none;">
+            <div class="payment-info">
+              <p class="label">Payment Number</p>
+              <div class="number-container">
+                <span class="number" id="mkash-number">Loading...</span>
+                <button class="copy-btn" onclick="copyToClipboard('mkash-number')">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Section -->
+    <div class="message-section">
+      <h2>Send Your Eid Wishes</h2>
+      
+      <form id="messageForm" class="message-form">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            placeholder="Enter your name" 
+            required
+            maxlength="50"
+          >
+          <small class="error" id="name-error"></small>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea 
+            id="message" 
+            name="message" 
+            placeholder="Share your Eid wishes..." 
+            rows="5"
+            required
+            maxlength="500"
+          ></textarea>
+          <small class="char-count"><span id="char-count">0</span>/500</small>
+          <small class="error" id="message-error"></small>
+        </div>
+
+        <button type="submit" class="submit-btn">Send Message</button>
+        <div class="success-message" id="successMessage" style="display: none;">
+          ✓ Your message has been sent successfully
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>Eid Salami Payment Portal</p>
+      <p class="small-text">© 2026 - Ahnaf Aqif</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
