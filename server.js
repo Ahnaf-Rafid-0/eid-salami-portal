@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 require('dotenv').config();
 
 const app = express();
@@ -15,14 +16,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// Session middleware
+// Session middleware with file store
 app.use(session({
+  store: new FileStore({
+    path: path.join(__dirname, 'sessions'),
+    ttl: 86400
+  }),
   secret: process.env.DASHBOARD_PASSWORD || 'default-secret',
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: { 
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: true
   }
 }));
 
@@ -48,7 +54,7 @@ initializeMessagesFile();
 
 // Auth middleware
 function isAuthenticated(req, res, next) {
-  if (req.session.authenticated) {
+  if (req.session && req.session.authenticated) {
     return next();
   }
   res.redirect('/dashboard-login');
@@ -323,7 +329,12 @@ app.post('/dashboard-auth', (req, res) => {
   
   if (password === process.env.DASHBOARD_PASSWORD) {
     req.session.authenticated = true;
-    res.json({ success: true });
+    req.session.save((err) => {
+      if (err) {
+        return res.json({ success: false });
+      }
+      res.json({ success: true });
+    });
   } else {
     res.json({ success: false });
   }
@@ -331,7 +342,7 @@ app.post('/dashboard-auth', (req, res) => {
 
 // Logout endpoint
 app.get('/dashboard-logout', (req, res) => {
-  req.session.destroy(() => {
+  req.session.destroy((err) => {
     res.redirect('/dashboard-login');
   });
 });
