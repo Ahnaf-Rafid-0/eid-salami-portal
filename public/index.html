@@ -18,7 +18,7 @@
     <div class="salami-info">
       
       <p class="festive-text">
-        মুক্তহস্তে সালামি দিয়ে আপনার মনুষ্যত্বের পরিচয় দিন , সালামি দিলে দোয়া ফ্রি ।<br>
+        মুক্তহস্তে সালামি দিয়ে আপনার মনুষ্যত্বের পরিচয় দিন , সালামি দিলে দোয়া ফ্রি ।<br>
         ঈদ মোবারক 🌙 !!! 
       </p>
       <div class="benefits">
@@ -44,7 +44,7 @@
               <p class="label">Account Number</p>
               <div class="number-container">
                 <span class="number" id="bkash-number">Loading...</span>
-                <button class="copy-btn" onclick="copyToClipboard('bkash-number')">Copy</button>
+                <button type="button" class="copy-btn" onclick="copyToClipboard(document.getElementById('bkash-number').textContent, this)">Copy</button>
               </div>
             </div>
           </div>
@@ -61,7 +61,7 @@
               <p class="label">Account Number</p>
               <div class="number-container">
                 <span class="number" id="nagad-number">Loading...</span>
-                <button class="copy-btn" onclick="copyToClipboard('nagad-number')">Copy</button>
+                <button type="button" class="copy-btn" onclick="copyToClipboard(document.getElementById('nagad-number').textContent, this)">Copy</button>
               </div>
             </div>
           </div>
@@ -78,21 +78,21 @@
               <p class="label">Account Holder Name</p>
               <div class="number-container">
                 <span class="number" id="bank-holder">Loading...</span>
-                <button class="copy-btn" onclick="copyToClipboard('bank-holder')">Copy</button>
+                <button type="button" class="copy-btn" onclick="copyToClipboard(document.getElementById('bank-holder').textContent, this)">Copy</button>
               </div>
             </div>
             <div class="payment-info" style="margin-top: 12px;">
               <p class="label">Account Number (IFIC BANK)</p>
               <div class="number-container">
                 <span class="number" id="bank-number">Loading...</span>
-                <button class="copy-btn" onclick="copyToClipboard('bank-number')">Copy</button>
+                <button type="button" class="copy-btn" onclick="copyToClipboard(document.getElementById('bank-number').textContent, this)">Copy</button>
               </div>
             </div>
             <div class="payment-info" style="margin-top: 12px;">
               <p class="label">Bank Address</p>
               <div class="number-container">
                 <span class="number" id="bank-address" style="font-size: 1em;">Loading...</span>
-                <button class="copy-btn" onclick="copyToClipboard('bank-address')">Copy</button>
+                <button type="button" class="copy-btn" onclick="copyToClipboard(document.getElementById('bank-address').textContent, this)">Copy</button>
               </div>
             </div>
           </div>
@@ -109,7 +109,7 @@
               <p class="label">Account Number</p>
               <div class="number-container">
                 <span class="number" id="cellfin-number">Loading...</span>
-                <button class="copy-btn" onclick="copyToClipboard('cellfin-number')">Copy</button>
+                <button type="button" class="copy-btn" onclick="copyToClipboard(document.getElementById('cellfin-number').textContent, this)">Copy</button>
               </div>
             </div>
           </div>
@@ -126,7 +126,7 @@
               <p class="label">Account Number</p>
               <div class="number-container">
                 <span class="number" id="rocket-number">Loading...</span>
-                <button class="copy-btn" onclick="copyToClipboard('rocket-number')">Copy</button>
+                <button type="button" class="copy-btn" onclick="copyToClipboard(document.getElementById('rocket-number').textContent, this)">Copy</button>
               </div>
             </div>
           </div>
@@ -143,7 +143,7 @@
               <p class="label">Account Number</p>
               <div class="number-container">
                 <span class="number" id="mkash-number">Loading...</span>
-                <button class="copy-btn" onclick="copyToClipboard('mkash-number')">Copy</button>
+                <button type="button" class="copy-btn" onclick="copyToClipboard(document.getElementById('mkash-number').textContent, this)">Copy</button>
               </div>
             </div>
           </div>
@@ -197,6 +197,93 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // Copy to Clipboard Function
+    function copyToClipboard(text, button) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = button.textContent;
+        const originalBg = button.style.background;
+        
+        button.textContent = '✅ Copied!';
+        button.style.background = '#00cc00';
+        
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.background = originalBg;
+        }, 2000);
+      }).catch(err => {
+        alert('Failed to copy. Please try again.');
+      });
+    }
+
+    // Load payment methods from API
+    fetch('/api/payment-methods')
+      .then(res => res.json())
+      .then(data => {
+        if (data.bkash) document.getElementById('bkash-number').textContent = data.bkash;
+        if (data.nagad) document.getElementById('nagad-number').textContent = data.nagad;
+        if (data.bank) document.getElementById('bank-number').textContent = data.bank;
+        if (data.bank_holder) document.getElementById('bank-holder').textContent = data.bank_holder;
+        if (data.bank_address) document.getElementById('bank-address').textContent = data.bank_address;
+        if (data.cellfin) document.getElementById('cellfin-number').textContent = data.cellfin;
+        if (data.rocket) document.getElementById('rocket-number').textContent = data.rocket;
+        if (data.mkash) document.getElementById('mkash-number').textContent = data.mkash;
+      });
+
+    // Payment button toggle
+    document.querySelectorAll('.payment-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const method = this.getAttribute('data-method');
+        const details = document.getElementById(method + '-details');
+        
+        document.querySelectorAll('.payment-details').forEach(d => {
+          if (d !== details) d.style.display = 'none';
+        });
+        
+        if (details.style.display === 'none') {
+          details.style.display = 'block';
+        } else {
+          details.style.display = 'none';
+        }
+      });
+    });
+
+    // Character counter
+    document.getElementById('message').addEventListener('input', function() {
+      document.getElementById('char-count').textContent = this.value.length;
+    });
+
+    // Form submission
+    document.getElementById('messageForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('name').value;
+      const message = document.getElementById('message').value;
+
+      try {
+        const response = await fetch('/api/submit-message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, message })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById('successMessage').style.display = 'block';
+          document.getElementById('messageForm').reset();
+          document.getElementById('char-count').textContent = '0';
+          
+          setTimeout(() => {
+            document.getElementById('successMessage').style.display = 'none';
+          }, 3000);
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        alert('Error sending message');
+      }
+    });
+  </script>
 </body>
 </html>
