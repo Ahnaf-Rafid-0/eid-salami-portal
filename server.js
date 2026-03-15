@@ -19,9 +19,22 @@ app.use(express.static('public'));
 const messagesFile = path.join(__dirname, 'messages.json');
 
 // Initialize messages.json if it doesn't exist
-if (!fs.existsSync(messagesFile)) {
-  fs.writeFileSync(messagesFile, JSON.stringify([], null, 2));
+function initializeMessagesFile() {
+  try {
+    if (!fs.existsSync(messagesFile)) {
+      fs.writeFileSync(messagesFile, JSON.stringify([], null, 2));
+    } else {
+      // Validate existing file
+      const content = fs.readFileSync(messagesFile, 'utf8');
+      JSON.parse(content);
+    }
+  } catch (error) {
+    console.warn('Corrupted messages.json detected, creating new file...');
+    fs.writeFileSync(messagesFile, JSON.stringify([], null, 2));
+  }
 }
+
+initializeMessagesFile();
 
 // Email transporter setup
 const transporter = nodemailer.createTransport({
@@ -73,8 +86,16 @@ app.post('/api/submit-message', async (req, res) => {
       });
     }
 
-    // Read existing messages
-    const messages = JSON.parse(fs.readFileSync(messagesFile, 'utf8'));
+    // Read existing messages with error handling
+    let messages = [];
+    try {
+      const fileContent = fs.readFileSync(messagesFile, 'utf8');
+      messages = JSON.parse(fileContent);
+    } catch (parseError) {
+      console.warn('Could not parse messages.json, starting with empty array');
+      messages = [];
+      fs.writeFileSync(messagesFile, JSON.stringify([], null, 2));
+    }
 
     // Add new message
     const newMessage = {
