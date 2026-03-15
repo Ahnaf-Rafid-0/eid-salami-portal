@@ -3,8 +3,6 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
-const session = require('express-session');
-const FileStore = require('session-file-store')(session);
 require('dotenv').config();
 
 const app = express();
@@ -16,21 +14,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// Session middleware with file store
-app.use(session({
-  store: new FileStore({
-    path: path.join(__dirname, 'sessions'),
-    ttl: 86400
-  }),
-  secret: process.env.DASHBOARD_PASSWORD || 'default-secret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000,
-    httpOnly: true
-  }
-}));
+// Simple in-memory session storage
+const sessions = {};
+
+function generateSessionId() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
 
 // Path to messages file
 const messagesFile = path.join(__dirname, 'messages.json');
@@ -54,10 +43,32 @@ initializeMessagesFile();
 
 // Auth middleware
 function isAuthenticated(req, res, next) {
-  if (req.session && req.session.authenticated) {
+  const sessionId = req.cookies?.sessionId;
+  
+  if (sessionId && sessions[sessionId]) {
     return next();
   }
   res.redirect('/dashboard-login');
+}
+
+// Cookie parser middleware (simple version)
+app.use((req, res, next) => {
+  const cookieHeader = req.headers.cookie;
+  req.cookies = {};
+  
+  if (cookieHeader) {
+    cookieHeader.split(';').forEach(cookie => {
+      const [name, value] = cookie.trim().split('=');
+      req.cookies[name] = decodeURIComponent(value || '');
+    });
+  }
+  
+  next();
+});
+
+// Set cookie helper
+function setCookie(res, name, value, maxAge) {
+  res.setHeader('Set-Cookie', `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; Max-Age=${maxAge}`);
 }
 
 // Get all payment methods
@@ -328,13 +339,15 @@ app.post('/dashboard-auth', (req, res) => {
   const { password } = req.body;
   
   if (password === process.env.DASHBOARD_PASSWORD) {
-    req.session.authenticated = true;
-    req.session.save((err) => {
-      if (err) {
-        return res.json({ success: false });
-      }
-      res.json({ success: true });
-    });
+    const sessionId = generateSessionId();
+    sessions[sessionId] = {
+      authenticated: true,
+      createdAt: Date.now()
+    };
+    
+    setCookie(res, 'sessionId', sessionId, 86400); // 24 hours
+    
+    res.json({ success: true });
   } else {
     res.json({ success: false });
   }
@@ -342,9 +355,13 @@ app.post('/dashboard-auth', (req, res) => {
 
 // Logout endpoint
 app.get('/dashboard-logout', (req, res) => {
-  req.session.destroy((err) => {
-    res.redirect('/dashboard-login');
-  });
+  const sessionId = req.cookies?.sessionId;
+  if (sessionId) {
+    delete sessions[sessionId];
+  }
+  
+  res.setHeader('Set-Cookie', 'sessionId=; Path=/; HttpOnly; Max-Age=0');
+  res.redirect('/dashboard-login');
 });
 
 // Dashboard page (PROTECTED)
