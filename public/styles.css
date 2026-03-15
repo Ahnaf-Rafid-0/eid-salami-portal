@@ -379,7 +379,7 @@ body {
   font-size: 1.3em;
   font-weight: bold;
   color: var(--silver-light);
-  font-family: 'Courier New', monospace;
+  font-family: 'Times New Roman', monospace;
   letter-spacing: 2px;
   text-shadow: 0 0 10px rgba(0, 204, 255, 0.3);
 }
@@ -558,26 +558,46 @@ body {
     font-size: 1em;
   }
 
+  .benefits {
+    gap: 8px;
+    margin-top: 15px;
+  }
+
+  .benefit {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+
   .payment-grid {
     grid-template-columns: 1fr;
+    gap: 15px;
   }
 
   .payment-btn {
-    min-height: 180px;
+    min-height: 160px;
+    padding: 15px 10px;
   }
 
   .payment-logo {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
   }
 
-  .number-container {
-    flex-direction: column;
-    align-items: stretch;
+  .payment-card {
+    padding: 12px;
   }
 
-  .copy-btn {
-    width: 100%;
+  .payment-info {
+    padding: 10px;
+  }
+
+  .number {
+    font-size: 1em;
+  }
+
+  .label {
+    font-size: 0.9em;
   }
 
   .message-section {
@@ -586,5 +606,36 @@ body {
 
   .message-section h2 {
     font-size: 1.5em;
+  }
+}
+
+@media (max-width: 480px) {
+  .benefits {
+    gap: 5px;
+  }
+
+  .benefit {
+    padding: 6px 10px;
+    font-size: 0.8em;
+    white-space: nowrap;
+  }
+
+  .payment-btn {
+    min-height: 160px;
+    padding: 10px;
+  }
+
+  .payment-logo {
+    width: 65px;
+    height: 65px;
+  }
+
+  .payment-card {
+    padding: 8px;
+  }
+
+  .number {
+    font-size: 0.9em;
+    letter-spacing: 1px;
   }
 }
